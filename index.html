@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TrueFactoryPrice AI | 供應鏈偵察終端</title>
+    <title>TrueFactoryPrice AI | 全球供應鏈偵察</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -13,28 +13,9 @@
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Noto+Sans+TC:wght@400;700&display=swap');
         body { background-color: #020617; color: #f8fafc; font-family: 'Space Grotesk', 'Noto Sans TC', sans-serif; margin: 0; overflow: hidden; }
         .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        
-        /* 3️⃣ 雷達掃描動畫 */
-        .radar {
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            border-radius: 50%;
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            animation: radar 2s infinite;
-        }
-        @keyframes radar {
-            0% { transform: scale(0.3); opacity: 1; }
-            100% { transform: scale(1.4); opacity: 0; }
-        }
-        .scanning-line {
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #3b82f6, transparent);
-            position: absolute;
-            width: 100%;
-            top: 0;
-            animation: scan 2s linear infinite;
-        }
+        .radar { position: absolute; width: 200%; height: 200%; border-radius: 50%; border: 1px solid rgba(59, 130, 246, 0.3); animation: radar 2s infinite; }
+        @keyframes radar { 0% { transform: scale(0.3); opacity: 1; } 100% { transform: scale(1.4); opacity: 0; } }
+        .scanning-line { height: 2px; background: linear-gradient(90deg, transparent, #3b82f6, transparent); position: absolute; width: 100%; top: 0; animation: scan 2s linear infinite; }
         @keyframes scan { 0% { top: 0%; opacity: 0; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
     </style>
 </head>
@@ -47,23 +28,73 @@
             return <i data-lucide={name} className={className}></i>;
         };
 
+        // 語言數據包
+        const i18n = {
+            zh: {
+                title: "揭秘真相",
+                sub: "发现热门产品背后的真实工厂价格。",
+                btn: "启动视觉侦察",
+                scanning: "AI 正在扫描...",
+                product: "检测到产品",
+                retail: "零售价",
+                factory: "工厂底价",
+                markup: "利润溢价",
+                save: "潜在节省",
+                scriptBtn: "生成 TIKTOK 脚本",
+                restart: "终止并重新开始",
+                hook: "这个卖 $39 的产品在中国的工厂价居然只要 $2！",
+                reveal: "看看我在全球供应链后端发现了什么。",
+                cta: "别再被割韭菜了，关注我带你揭秘更多工厂真相！"
+            },
+            tw: {
+                title: "揭開真相",
+                sub: "發現熱門產品背後的真實工廠價格。",
+                btn: "啟動視覺偵察",
+                scanning: "AI 正在掃描...",
+                product: "檢測到產品",
+                retail: "通路零售價",
+                factory: "工廠底價",
+                markup: "利潤溢價",
+                save: "潛在節省",
+                scriptBtn: "生成 TIKTOK 劇本",
+                restart: "終止並重新開始",
+                hook: "這款賣 $39 的產品在中國工廠價居然只要 $2！",
+                reveal: "看看我在全球供應鏈後端發現了什麼。",
+                cta: "別再當盤子了，關注我帶你揭秘更多工廠真相！"
+            },
+            en: {
+                title: "REVEAL TRUTH",
+                sub: "Find the REAL factory cost behind viral products.",
+                btn: "INITIALIZE SCAN",
+                scanning: "AI SCANNING...",
+                product: "Detected Product",
+                retail: "Retail Price",
+                factory: "Factory Base",
+                markup: "Markup Analysis",
+                save: "Potential Saving",
+                scriptBtn: "GENERATE TIKTOK SCRIPT",
+                restart: "TERMINATE & RESTART",
+                hook: "This $39 product costs only $2 in China!",
+                reveal: "Look what I found behind the global supply chain secrets.",
+                cta: "Stop being overcharged. Follow for more factory hacks!"
+            }
+        };
+
         function App() {
+            const [lang, setLang] = useState('tw');
             const [step, setStep] = useState('home');
             const [loading, setLoading] = useState(false);
             const [result, setResult] = useState(null);
             const [showScript, setShowScript] = useState(false);
+            const [showLangMenu, setShowLangMenu] = useState(false);
+
+            const t = i18n[lang];
 
             const handleUpload = (e) => {
                 if (!e.target.files[0]) return;
                 setLoading(true);
                 setTimeout(() => {
-                    setResult({
-                        name: "Modern Canvas Wall Art",
-                        factory_price: 2.15,
-                        retail_price: 39.99,
-                        markup: 1758,
-                        saving: 92
-                    });
+                    setResult({ name: "Modern Canvas Art", factory: 2.15, retail: 39.99, markup: 1758, saving: 92 });
                     setLoading(false);
                     setStep('result');
                 }, 3000);
@@ -71,122 +102,103 @@
 
             return (
                 <div className="max-w-md mx-auto h-screen flex flex-col relative bg-[#020617] overflow-hidden">
-                    {/* Header */}
-                    <header className="p-6 flex justify-between items-center z-20">
+                    {/* Header with Translation Button */}
+                    <header className="p-6 flex justify-between items-center z-50">
                         <div className="flex items-center gap-2">
                             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30">
                                 <Icon name="cpu" className="w-5 h-5 text-white" />
                             </div>
-                            <span className="font-bold tracking-tighter text-xl italic">TRUE FACTORY AI</span>
+                            <span className="font-bold tracking-tighter text-xl italic uppercase">True AI</span>
                         </div>
-                        <Icon name="bell" className="w-5 h-5 text-slate-500" />
+                        <div className="relative">
+                            <button onClick={() => setShowLangMenu(!showLangMenu)} className="glass px-3 py-1.5 rounded-full flex items-center gap-2 text-xs font-bold border-blue-500/30">
+                                <Icon name="languages" className="w-4 h-4 text-blue-400" />
+                                {lang.toUpperCase()}
+                            </button>
+                            {showLangMenu && (
+                                <div className="absolute right-0 mt-2 w-32 glass rounded-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
+                                    {['zh', 'tw', 'en'].map(l => (
+                                        <button key={l} onClick={() => {setLang(l); setShowLangMenu(false);}} className="w-full px-4 py-3 text-left text-xs font-bold hover:bg-blue-600/20 transition-colors uppercase border-b border-white/5 last:border-0">
+                                            {l === 'zh' ? '简体中文' : l === 'tw' ? '繁體中文' : 'English'}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </header>
 
-                    <main className="flex-1 px-6 flex flex-col justify-center pb-24 overflow-y-auto">
+                    <main className="flex-1 px-6 flex flex-col justify-center pb-24 overflow-y-auto z-10">
                         {step === 'home' ? (
                             <div className="space-y-8 animate-in fade-in duration-700">
-                                {/* 1️⃣ 信息層級優化 */}
                                 <div className="space-y-2">
-                                    <h2 className="text-5xl font-black italic leading-[0.8] tracking-tighter">REVEAL THE <br/><span className="text-blue-500">TRUTH.</span></h2>
-                                    <p className="text-slate-400 text-sm leading-relaxed">
-                                        Discover the real Chinese factory price behind viral products.
-                                    </p>
+                                    <h2 className="text-5xl font-black italic leading-[0.8] tracking-tighter uppercase">{t.title}</h2>
+                                    <p className="text-slate-400 text-sm leading-relaxed">{t.sub}</p>
                                 </div>
-
-                                {/* 2️⃣ 虛線邊框上傳按鈕 */}
                                 <div className="relative overflow-hidden group">
                                     <input type="file" accept="image/*" onChange={handleUpload} className="hidden" id="upload" />
                                     <label htmlFor="upload" className="block glass p-14 cursor-pointer text-center transition-all hover:bg-blue-600/10 border-2 border-dashed border-blue-500/40 relative overflow-hidden rounded-[40px]">
                                         {loading && (
                                             <div className="absolute inset-0 flex items-center justify-center">
                                                 <div className="radar"></div>
-                                                <div className="radar" style={{animationDelay: '1s'}}></div>
                                                 <div className="scanning-line"></div>
                                             </div>
                                         )}
                                         <div className="mb-6 flex justify-center relative z-10">
                                             <Icon name={loading ? "target" : "scan-eye"} className={`w-16 h-16 ${loading ? 'text-blue-400 animate-pulse' : 'text-blue-500'}`} />
                                         </div>
-                                        <span className="text-2xl font-bold block mb-2 relative z-10 uppercase italic tracking-tight">
-                                            {loading ? "AI Scanning..." : "Initialize Scan"}
-                                        </span>
+                                        <span className="text-2xl font-bold block mb-2 relative z-10 uppercase italic tracking-tight">{loading ? t.scanning : t.btn}</span>
                                     </label>
                                 </div>
                             </div>
                         ) : (
                             <div className="space-y-5 animate-in slide-in-from-bottom-10 duration-500">
-                                {/* 4️⃣ 產品信息模塊 */}
                                 <div className="glass p-6 rounded-[32px] border-blue-500/20">
-                                    <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest mb-1">Detected Product</p>
+                                    <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest mb-1">{t.product}</p>
                                     <p className="text-xl font-bold italic tracking-tight">{result.name}</p>
                                 </div>
-
-                                {/* 5️⃣ 市場價對比矩陣 */}
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="glass p-6 rounded-[32px] text-center border-white/5">
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase mb-2">Retail Price</p>
-                                        <p className="text-2xl font-bold text-slate-400 line-through opacity-50">${result.retail_price}</p>
+                                    <div className="glass p-6 rounded-[32px] text-center">
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase mb-2">{t.retail}</p>
+                                        <p className="text-2xl font-bold text-slate-400 line-through opacity-50">${result.retail}</p>
                                     </div>
                                     <div className="bg-blue-600 p-6 rounded-[32px] text-center shadow-xl shadow-blue-500/20">
-                                        <p className="text-[10px] text-blue-100 font-bold uppercase mb-2">Factory Base</p>
-                                        <p className="text-3xl font-black">${result.factory_price}</p>
+                                        <p className="text-[10px] text-blue-100 font-bold uppercase mb-2">{t.factory}</p>
+                                        <p className="text-3xl font-black">${result.factory}</p>
                                     </div>
                                 </div>
-
                                 <div className="glass p-6 rounded-[32px] flex justify-between items-center">
-                                    <div>
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Markup Analysis</p>
-                                        <p className="text-2xl font-black text-blue-500">+{result.markup}%</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Potential Saving</p>
-                                        <p className="text-2xl font-black text-green-400">{result.saving}%</p>
-                                    </div>
+                                    <div><p className="text-[10px] text-slate-500 font-bold uppercase mb-1">{t.markup}</p><p className="text-2xl font-black text-blue-500">+{result.markup}%</p></div>
+                                    <div className="text-right"><p className="text-[10px] text-slate-500 font-bold uppercase mb-1">{t.save}</p><p className="text-2xl font-black text-green-400">{result.saving}%</p></div>
                                 </div>
-
-                                {/* 6️⃣ TikTok 腳本彈窗邏輯 */}
-                                <button 
-                                    onClick={() => setShowScript(true)}
-                                    className="w-full bg-white text-black py-6 rounded-[32px] font-black text-lg flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl"
-                                >
-                                    <Icon name="video" className="w-6 h-6" /> GENERATE TIKTOK SCRIPT
+                                <button onClick={() => setShowScript(true)} className="w-full bg-white text-black py-6 rounded-[32px] font-black text-lg flex items-center justify-center gap-3 active:scale-95 shadow-xl transition-all">
+                                    <Icon name="video" className="w-6 h-6" /> {t.scriptBtn}
                                 </button>
-                                
-                                <button onClick={() => setStep('home')} className="w-full text-slate-600 text-[10px] font-bold tracking-[0.4em] uppercase">Terminate & Restart</button>
+                                <button onClick={() => setStep('home')} className="w-full text-slate-600 text-[10px] font-bold tracking-[0.4em] uppercase">{t.restart}</button>
                             </div>
                         )}
                     </main>
 
-                    {/* 6️⃣ 腳本卡片組件 */}
+                    {/* Script Overlay */}
                     {showScript && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[#020617]/90 backdrop-blur-sm animate-in fade-in duration-300">
+                        <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-[#020617]/90 backdrop-blur-sm animate-in fade-in">
                             <div className="glass w-full max-w-sm rounded-[40px] p-8 space-y-6 relative border-blue-500/30">
                                 <button onClick={() => setShowScript(false)} className="absolute top-6 right-6 text-slate-500"><Icon name="x" className="w-6 h-6" /></button>
-                                <h3 className="text-2xl font-black italic text-blue-500 flex items-center gap-2"><Icon name="zap" className="w-5 h-5" /> 15s Viral Script</h3>
-                                <div className="space-y-4 text-sm leading-relaxed">
-                                    <div><span className="text-blue-500 font-bold mr-2">HOOK:</span> "This ${result.retail_price} product costs only ${result.factory_price} in China!"</div>
-                                    <div><span className="text-blue-500 font-bold mr-2">REVEAL:</span> "Look what I found behind the global supply chain secrets."</div>
-                                    <div><span className="text-blue-500 font-bold mr-2">CTA:</span> "Stop being overcharged. Follow for more factory hacks!"</div>
+                                <h3 className="text-2xl font-black italic text-blue-500 flex items-center gap-2"><Icon name="zap" className="w-5 h-5" /> Viral Script</h3>
+                                <div className="space-y-4 text-sm leading-relaxed border-l-2 border-blue-500/30 pl-4">
+                                    <div><span className="text-blue-500 font-bold mr-2 tracking-widest uppercase text-[10px]">Hook:</span> {t.hook}</div>
+                                    <div><span className="text-blue-500 font-bold mr-2 tracking-widest uppercase text-[10px]">Reveal:</span> {t.reveal}</div>
+                                    <div><span className="text-blue-500 font-bold mr-2 tracking-widest uppercase text-[10px]">CTA:</span> {t.cta}</div>
                                 </div>
-                                <button className="w-full py-4 bg-blue-600 rounded-2xl font-bold flex items-center justify-center gap-2"><Icon name="copy" className="w-4 h-4" /> Copy Script</button>
+                                <button className="w-full py-4 bg-blue-600 rounded-2xl font-bold text-white flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30"><Icon name="copy" className="w-4 h-4" /> Copy</button>
                             </div>
                         </div>
                     )}
 
-                    {/* 7️⃣ 底部導航欄 */}
+                    {/* Navbar */}
                     <footer className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-6 grid grid-cols-3 glass border-t-0 rounded-t-[40px] z-40 bg-[#0f172a]/80">
-                        <div className="flex flex-col items-center gap-1 text-blue-500">
-                            <Icon name="scan" className="w-6 h-6" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest">Scan</span>
-                        </div>
-                        <div className="flex flex-col items-center gap-1 text-slate-600">
-                            <Icon name="trending-up" className="w-6 h-6" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest">Trends</span>
-                        </div>
-                        <div className="flex flex-col items-center gap-1 text-slate-600">
-                            <Icon name="user" className="w-6 h-6" />
-                            <span className="text-[10px] font-bold uppercase tracking-widest">Profile</span>
-                        </div>
+                        <div className="flex flex-col items-center gap-1 text-blue-500"><Icon name="scan" className="w-6 h-6" /><span className="text-[10px] font-bold uppercase">Scan</span></div>
+                        <div className="flex flex-col items-center gap-1 text-slate-600"><Icon name="trending-up" className="w-6 h-6" /><span className="text-[10px] font-bold uppercase">Trends</span></div>
+                        <div className="flex flex-col items-center gap-1 text-slate-600"><Icon name="user" className="w-6 h-6" /><span className="text-[10px] font-bold uppercase">Profile</span></div>
                     </footer>
                 </div>
             );
