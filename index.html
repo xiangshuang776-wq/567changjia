@@ -1,173 +1,158 @@
-<!DOCTYPE html>
-<html lang="zh-TW" translate="no">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="google" content="notranslate">
-    <title>TRUE AI | Supply Chain Intelligence</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Noto+Sans+TC:wght@400;700&display=swap');
-        
-        :root { --bg: #020617; --primary: #2563EB; --secondary: #60A5FA; --text-mute: #94A3B8; }
+最大问题：背景太亮 + 文字太浅
 
-        body { 
-            background-color: var(--bg); 
-            background: radial-gradient(circle at 50% 20%, #1e3a8a33, transparent 60%); /* ① 背景光暈 */
-            color: #f8fafc; 
-            font-family: 'Space Grotesk', 'Noto Sans TC', sans-serif; 
-            margin: 0; 
-            overflow: hidden; 
-        }
+你现在的背景是这种：
 
-        /* ② 圓形掃描核心動畫 */
-        .scan-core {
-            width: 200px; height: 200px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            box-shadow: 0 0 40px rgba(37, 99, 235, 0.4);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            position: relative; transition: all 0.3s ease;
-        }
-        .scan-core:active { transform: scale(0.95); }
-        
-        .pulse-ring {
-            position: absolute; width: 100%; height: 100%;
-            border: 1px solid var(--secondary); border-radius: 50%;
-            animation: pulse 2s infinite; opacity: 0;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.5; }
-            100% { transform: scale(1.8); opacity: 0; }
-        }
+浅灰渐变
 
-        .glass-card {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 32px;
-        }
-    </style>
-</head>
-<body>
-    <div id="root"></div>
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-        const Icon = ({ name, className }) => {
-            useEffect(() => { if(window.lucide) lucide.createIcons(); }, [name]);
-            return <i data-lucide={name} className={className}></i>;
-        };
+但标题是：
 
-        const i18n = {
-            tw: { title: "揭開產品真相", sub: "Find real factory prices behind viral products", btn: "AI SCAN", action: "啟動視覺偵察", factory: "FACTORY BASE", retail: "RETAIL PRICE", markup: "MARKUP" }
-        };
+白色
 
-        function App() {
-            const [step, setStep] = useState('home');
-            const [loading, setLoading] = useState(false);
-            const [result, setResult] = useState(null);
-            const t = i18n.tw;
+结果就是：
 
-            const handleUpload = (e) => {
-                if (!e.target.files[0]) return;
-                setLoading(true);
-                setTimeout(() => {
-                    setResult({ name: "Modern Canvas Art", factory: 2.15, retail: 39.99, markup: 1758 });
-                    setLoading(false);
-                    setStep('result');
-                }, 2500);
-            };
+白字 + 浅背景
+= 看不见
 
-            return (
-                <div className="max-w-md mx-auto h-screen flex flex-col relative overflow-hidden">
-                    {/* ④ Header 優化 */}
-                    <header className="p-8 flex justify-between items-start z-10">
-                        <div>
-                            <h1 className="font-bold text-xl tracking-tighter leading-none">TRUE AI</h1>
-                            <p className="text-[10px] text-blue-400 font-bold tracking-[0.2em] uppercase mt-1">Supply Chain Intelligence</p>
-                        </div>
-                        <div className="glass-card px-3 py-1 text-[10px] font-bold border-blue-500/20">TW</div>
-                    </header>
+UI 设计有个基本原则：
 
-                    <main className="flex-1 px-8 flex flex-col items-center justify-center text-center pb-20">
-                        {step === 'home' ? (
-                            <div className="space-y-12 animate-in fade-in duration-700 w-full">
-                                {/* ③ 標題中英混排 */}
-                                <div className="space-y-3">
-                                    <h2 className="text-4xl font-bold tracking-tight">{t.title}</h2>
-                                    <p className="text-slate-400 text-sm font-light tracking-wide">{t.sub}</p>
-                                </div>
+对比度 ≥ 4.5:1
 
-                                {/* ⑤ 圓形掃描焦點 */}
-                                <div className="relative flex justify-center py-10">
-                                    <input type="file" accept="image/*" onChange={handleUpload} className="hidden" id="upload" />
-                                    <label htmlFor="upload" className="cursor-pointer relative">
-                                        {loading && <div className="pulse-ring"></div>}
-                                        {loading && <div className="pulse-ring" style={{animationDelay: '1s'}}></div>}
-                                        <div className="scan-core">
-                                            <Icon name={loading ? "loader-2" : "eye"} className={`w-10 h-10 text-white ${loading ? 'animate-spin' : ''}`} />
-                                            <span className="mt-3 font-black text-xs tracking-[0.3em]">{loading ? "SCANNING" : t.btn}</span>
-                                        </div>
-                                    </label>
-                                </div>
-                                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.4em]">{t.action}</p>
-                            </div>
-                        ) : (
-                            <div className="w-full space-y-6 animate-in slide-in-from-bottom-10 duration-500">
-                                <div className="glass-card p-8 text-left border-blue-500/10">
-                                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Detected Object</p>
-                                    <p className="text-2xl font-bold italic tracking-tight">{result.name}</p>
-                                </div>
-                                
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="glass-card p-6 text-center">
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase mb-2">{t.retail}</p>
-                                        <p className="text-xl font-bold opacity-30 line-through">${result.retail}</p>
-                                    </div>
-                                    <div className="bg-blue-600 rounded-[32px] p-6 text-center shadow-2xl shadow-blue-500/30">
-                                        <p className="text-[10px] text-blue-100 font-bold uppercase mb-2">{t.factory}</p>
-                                        <p className="text-3xl font-black">${result.factory}</p>
-                                    </div>
-                                </div>
+现在大概只有：
 
-                                <div className="glass-card p-6 flex justify-between items-center">
-                                    <div className="text-left">
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{t.markup}</p>
-                                        <p className="text-3xl font-black text-blue-500">+{result.markup}%</p>
-                                    </div>
-                                    <Icon name="trending-up" className="w-8 h-8 text-blue-500 opacity-50" />
-                                </div>
+1.5:1
 
-                                <button className="w-full bg-white text-black py-7 rounded-[32px] font-black text-lg flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl">
-                                    <Icon name="video" className="w-6 h-6" /> GENERATE VIRAL SCRIPT
-                                </button>
-                                <button onClick={() => setStep('home')} className="text-[10px] text-slate-600 font-bold tracking-[0.5em] uppercase">Terminate Session</button>
-                            </div>
-                        )}
-                    </main>
+所以视觉直接废了。
 
-                    {/* ⑤ 底部導航焦點 */}
-                    <footer className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-8 grid grid-cols-3 items-end z-20">
-                        <div className="flex flex-col items-center gap-2 text-blue-500">
-                            <Icon name="scan" className="w-6 h-6" />
-                            <div className="w-1 h-1 bg-blue-500 rounded-full"></div>
-                        </div>
-                        <div className="flex flex-col items-center text-slate-700">
-                            <Icon name="trending-up" className="w-6 h-6" />
-                        </div>
-                        <div className="flex flex-col items-center text-slate-700">
-                            <Icon name="user" className="w-6 h-6" />
-                        </div>
-                    </footer>
-                </div>
-            );
-        }
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
-</body>
-</html>
+正确做法
+
+要么：
+
+深色背景
+
+#020617
+
+文字：
+
+#FFFFFF
+
+要么：
+
+浅色背景
+
+#F1F5F9
+
+文字：
+
+#0F172A
+
+不能混。
+
+2️⃣ 页面太“空”
+
+现在结构：
+
+LOGO
+
+
+标题
+
+
+按钮
+
+
+底部
+
+中间留了 巨大空白，看起来像没加载完。
+
+正确结构应该更紧凑：
+
+LOGO
+
+标题
+副标题
+
+[AI SCAN]
+
+功能说明
+3️⃣ 蓝色按钮太普通
+
+现在按钮像：
+
+PowerPoint按钮
+
+AI产品按钮通常会有：
+
+渐变
+
+光晕
+
+动画
+
+例如：
+
+#2563EB → #60A5FA
+
+再加：
+
+box-shadow
+4️⃣ 字体也不对
+
+现在标题字体太细：
+
+揭開產品真相
+
+应该用：
+
+font-weight: 800
+
+或者更粗。
+
+我给你一个更合理的视觉结构
+
+手机 UI 应该是：
+
+TRUE AI
+
+揭開產品真相
+Find real factory prices
+
+
+      ◉
+    AI SCAN
+
+
+Scan viral products
+to reveal factory costs
+
+
+SCAN   TRENDS   PROFILE
+
+关键是：
+
+按钮是视觉中心
+最简单的修复方法（马上能变好看）
+
+把背景改回深色：
+
+body{
+background:#020617;
+color:white;
+}
+
+副标题：
+
+color:#94A3B8;
+
+按钮：
+
+background:linear-gradient(135deg,#2563EB,#60A5FA);
+
+马上就会好很多。
+
+说实话
+
+你现在 UI 难看的原因不是代码，而是：
+
+配色 + 对比度
+
+这是 UI 新手最常见的问题。
