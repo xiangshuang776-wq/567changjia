@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-TW" translate="no"> <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="google" content="notranslate">
+    <title>TrueFactoryPrice AI | 供應鏈黑客系統</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Noto+Sans+TC:wght@400;700&display=swap');
+        body { background-color: #020617; color: #f8fafc; font-family: 'Space Grotesk', 'Noto Sans TC', sans-serif; margin: 0; overflow-x: hidden; }
+        .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 40px; }
+        .neon-glow { box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); }
+        .scanning-line { height: 2px; background: linear-gradient(90deg, transparent, #3b82f6, transparent); position: absolute; width: 100%; top: 0; animation: scan 2s linear infinite; }
+        @keyframes scan { 0% { top: 0%; opacity: 0; } 50% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const Icon = ({ name, className }) => {
+            useEffect(() => { if(window.lucide) lucide.createIcons(); }, [name]);
+            return <i data-lucide={name} className={className}></i>;
+        };
+
+        function App() {
+            const [step, setStep] = useState('home');
+            const [loading, setLoading] = useState(false);
+            const [result, setResult] = useState(null);
+
+            const handleUpload = (e) => {
+                if (!e.target.files[0]) return;
+                setLoading(true);
+                // 模擬 AI 深度掃描邏輯
+                setTimeout(() => {
+                    setResult({
+                        name: "現代極簡無框畫 (Canvas Art)",
+                        factory_price: 2.15,
+                        retail_price: 39.99,
+                        saving: 92,
+                        viral_score: 95
+                    });
+                    setLoading(false);
+                    setStep('result');
+                }, 2500);
+            };
+
+            return (
+                <div className="max-w-md mx-auto min-h-screen flex flex-col relative p-6">
+                    {/* Header */}
+                    <header className="flex justify-between items-center mb-10">
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center neon-glow"><Icon name="cpu" className="w-5 h-5 text-white" /></div>
+                            <span className="font-bold tracking-tighter text-xl italic">TRUE FACTORY AI</span>
+                        </div>
+                    </header>
+
+                    <main className="flex-1 flex flex-col justify-center">
+                        {step === 'home' ? (
+                            <div className="space-y-8 animate-in fade-in duration-700">
+                                <h2 className="text-5xl font-black italic leading-[0.9]">REVEAL THE <br/><span className="text-blue-500">TRUTH.</span></h2>
+                                <div className="relative overflow-hidden">
+                                    <input type="file" accept="image/*" onChange={handleUpload} className="hidden" id="upload" />
+                                    <label htmlFor="upload" className="block glass p-14 cursor-pointer text-center transition-all hover:bg-blue-600/10 active:scale-95">
+                                        {loading && <div className="scanning-line"></div>}
+                                        <div className="mb-6 flex justify-center"><Icon name={loading ? "target" : "scan"} className="w-14 h-14 text-blue-500" /></div>
+                                        <span className="text-2xl font-bold block mb-2">{loading ? "正在解析數據..." : "啟動視覺偵察"}</span>
+                                        <span className="text-slate-500 text-xs tracking-widest uppercase">上傳產品圖或現場拍攝</span>
+                                    </label>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-6 animate-in slide-in-from-bottom-10">
+                                <div className="glass p-8 text-center neon-glow border-blue-500/30">
+                                    <p className="text-[10px] font-bold text-blue-400 mb-2 tracking-[0.3em] uppercase italic">源頭工廠底價</p>
+                                    <span className="text-7xl font-black italic text-white tracking-tighter">${result.factory_price}</span>
+                                </div>
+                                <div className="glass p-6 flex justify-between items-center">
+                                    <span className="text-xs text-slate-500 font-bold uppercase italic">暴利扣除比率</span>
+                                    <span className="text-2xl font-black text-blue-500">-{result.saving}%</span>
+                                </div>
+                                <button className="w-full bg-white text-black py-7 rounded-[40px] font-black text-xl flex items-center justify-center gap-3 active:scale-95 shadow-xl">
+                                    <Icon name="video" className="w-6 h-6" /> 生成 TIKTOK 爆款劇本
+                                </button>
+                                <button onClick={() => setStep('home')} className="w-full text-slate-700 text-[10px] font-bold tracking-[0.5em] uppercase">Restart Scan</button>
+                            </div>
+                        )}
+                    </main>
+                </div>
+            );
+        }
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
