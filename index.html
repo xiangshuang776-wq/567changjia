@@ -1,158 +1,186 @@
-最大问题：背景太亮 + 文字太浅
-
-你现在的背景是这种：
-
-浅灰渐变
-
-但标题是：
-
-白色
-
-结果就是：
-
-白字 + 浅背景
-= 看不见
-
-UI 设计有个基本原则：
-
-对比度 ≥ 4.5:1
-
-现在大概只有：
-
-1.5:1
-
-所以视觉直接废了。
-
-正确做法
-
-要么：
-
-深色背景
-
-#020617
-
-文字：
-
-#FFFFFF
-
-要么：
-
-浅色背景
-
-#F1F5F9
-
-文字：
-
-#0F172A
-
-不能混。
-
-2️⃣ 页面太“空”
-
-现在结构：
-
-LOGO
-
-
-标题
-
-
-按钮
-
-
-底部
-
-中间留了 巨大空白，看起来像没加载完。
-
-正确结构应该更紧凑：
-
-LOGO
-
-标题
-副标题
-
-[AI SCAN]
-
-功能说明
-3️⃣ 蓝色按钮太普通
-
-现在按钮像：
-
-PowerPoint按钮
-
-AI产品按钮通常会有：
-
-渐变
-
-光晕
-
-动画
-
-例如：
-
-#2563EB → #60A5FA
-
-再加：
-
-box-shadow
-4️⃣ 字体也不对
-
-现在标题字体太细：
-
-揭開產品真相
-
-应该用：
-
-font-weight: 800
-
-或者更粗。
-
-我给你一个更合理的视觉结构
-
-手机 UI 应该是：
-
-TRUE AI
-
-揭開產品真相
-Find real factory prices
-
-
-      ◉
-    AI SCAN
-
-
-Scan viral products
-to reveal factory costs
-
-
-SCAN   TRENDS   PROFILE
-
-关键是：
-
-按钮是视觉中心
-最简单的修复方法（马上能变好看）
-
-把背景改回深色：
-
-body{
-background:#020617;
-color:white;
-}
-
-副标题：
-
-color:#94A3B8;
-
-按钮：
-
-background:linear-gradient(135deg,#2563EB,#60A5FA);
-
-马上就会好很多。
-
-说实话
-
-你现在 UI 难看的原因不是代码，而是：
-
-配色 + 对比度
-
-这是 UI 新手最常见的问题。
+<!DOCTYPE html>
+<html lang="zh-TW" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="google" content="notranslate">
+    <title>TRUE AI | Supply Chain Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;800&family=Noto+Sans+TC:wght@400;700;900&display=swap');
+        
+        :root { 
+            --bg: #020617; 
+            --primary: #2563EB; 
+            --secondary: #60A5FA; 
+            --text-main: #FFFFFF;
+            --text-mute: #94A3B8; 
+        }
+
+        body { 
+            background-color: var(--bg); 
+            /* 1️⃣ 增加頂部科技感光暈 */
+            background: radial-gradient(circle at 50% 15%, #1e3a8a66, transparent 60%), var(--bg);
+            color: var(--text-main); 
+            font-family: 'Space Grotesk', 'Noto Sans TC', sans-serif; 
+            margin: 0; 
+            overflow: hidden; 
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 3️⃣ 升級漸變掃描按鈕 */
+        .scan-btn {
+            width: 180px; height: 180px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 0 50px rgba(37, 99, 235, 0.5), inset 0 0 20px rgba(255,255,255,0.2);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: relative; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 4px solid rgba(255, 255, 255, 0.1);
+        }
+        .scan-btn:active { transform: scale(0.9) rotate(5deg); }
+        
+        .pulse {
+            position: absolute; width: 100%; height: 100%;
+            border: 2px solid var(--secondary); border-radius: 50%;
+            animation: pulse-ring 2.5s infinite; opacity: 0;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const Icon = ({ name, className }) => {
+            useEffect(() => { if(window.lucide) lucide.createIcons(); }, [name]);
+            return <i data-lucide={name} className={className}></i>;
+        };
+
+        function App() {
+            const [step, setStep] = useState('home');
+            const [loading, setLoading] = useState(false);
+            const [result, setResult] = useState(null);
+
+            const handleUpload = (e) => {
+                if (!e.target.files[0]) return;
+                setLoading(true);
+                setTimeout(() => {
+                    setResult({ name: "Modern Canvas Art", factory: 2.15, retail: 39.99, markup: 1758 });
+                    setLoading(false);
+                    setStep('result');
+                }, 2800);
+            };
+
+            return (
+                <div className="max-w-md mx-auto h-screen flex flex-col relative overflow-hidden">
+                    {/* Header */}
+                    <header className="p-8 flex justify-between items-start z-10">
+                        <div className="animate-in fade-in slide-in-from-top-4">
+                            <h1 className="font-extrabold text-2xl tracking-tighter leading-none italic">TRUE AI</h1>
+                            <p className="text-[9px] text-blue-400 font-black tracking-[0.3em] uppercase mt-1">Supply Chain Intelligence</p>
+                        </div>
+                        <div className="glass-panel px-4 py-1.5 text-[10px] font-black border-blue-500/30 text-blue-400">SESSION V1.0</div>
+                    </header>
+
+                    <main className="flex-1 px-10 flex flex-col items-center justify-between py-12 z-10">
+                        {step === 'home' ? (
+                            <div className="flex flex-col items-center justify-between h-full w-full animate-in fade-in duration-1000">
+                                {/* 4️⃣ 標題加粗加黑 */}
+                                <div className="text-center space-y-4">
+                                    <h2 className="text-5xl font-[900] tracking-tighter leading-tight italic">揭開產品真相</h2>
+                                    <p className="text-[#94A3B8] text-base font-medium tracking-wide">Find real factory prices behind viral products</p>
+                                </div>
+
+                                {/* 3️⃣ 視覺焦點：巨大的圓形 AI SCAN 核心 */}
+                                <div className="relative flex justify-center py-6">
+                                    <input type="file" accept="image/*" onChange={handleUpload} className="hidden" id="upload" />
+                                    <label htmlFor="upload" className="cursor-pointer relative">
+                                        {loading && <div className="pulse"></div>}
+                                        {loading && <div className="pulse" style={{animationDelay: '1.2s'}}></div>}
+                                        <div className="scan-btn">
+                                            <Icon name={loading ? "loader-2" : "eye"} className={`w-12 h-12 text-white ${loading ? 'animate-spin' : ''}`} />
+                                            <span className="mt-4 font-black text-sm tracking-[0.4em] text-white">
+                                                {loading ? "SCANNING" : "AI SCAN"}
+                                            </span>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                {/* 2️⃣ 緊湊的功能說明 */}
+                                <div className="text-center space-y-1">
+                                    <p className="text-[11px] text-white font-black uppercase tracking-[0.5em] opacity-80">啟動視覺偵察</p>
+                                    <p className="text-[9px] text-[#94A3B8] uppercase tracking-widest font-bold">Scan viral products to reveal costs</p>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="w-full space-y-6 animate-in slide-in-from-bottom-12 duration-700">
+                                <div className="glass-panel p-8 text-left border-blue-500/20 shadow-2xl">
+                                    <p className="text-[10px] text-blue-400 font-black uppercase tracking-widest mb-2">Detected Object</p>
+                                    <p className="text-3xl font-[900] italic tracking-tight text-white">{result.name}</p>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="glass-panel p-6 text-center border-white/5">
+                                        <p className="text-[10px] text-[#94A3B8] font-black uppercase mb-2">Retail Price</p>
+                                        <p className="text-2xl font-bold text-slate-500 line-through tracking-tighter opacity-50">${result.retail}</p>
+                                    </div>
+                                    <div className="bg-gradient-to-br from-blue-600 to-blue-400 rounded-[32px] p-6 text-center shadow-2xl shadow-blue-500/40 border border-white/20">
+                                        <p className="text-[10px] text-blue-50 text-white font-black uppercase mb-2">Factory Base</p>
+                                        <p className="text-4xl font-[900] text-white tracking-tighter">${result.factory}</p>
+                                    </div>
+                                </div>
+
+                                <div className="glass-panel p-8 flex justify-between items-center border-blue-500/10 shadow-lg">
+                                    <div className="text-left">
+                                        <p className="text-[10px] text-[#94A3B8] font-black uppercase tracking-widest mb-1 leading-none">Markup Analysis</p>
+                                        <p className="text-4xl font-[900] text-blue-500 tracking-tighter leading-none">+{result.markup}%</p>
+                                    </div>
+                                    <div className="p-4 bg-blue-500/10 rounded-full">
+                                        <Icon name="trending-up" className="w-8 h-8 text-blue-500" />
+                                    </div>
+                                </div>
+
+                                <button className="w-full bg-white text-black py-7 rounded-[36px] font-[900] text-xl flex items-center justify-center gap-3 active:scale-95 transition-all shadow-[0_20px_50px_rgba(255,255,255,0.15)] uppercase italic tracking-tighter">
+                                    <Icon name="video" className="w-6 h-6" /> Viral Script
+                                </button>
+                                <button onClick={() => setStep('home')} className="w-full text-[10px] text-slate-600 font-black tracking-[0.6em] uppercase hover:text-slate-400 transition-colors">Terminate Session</button>
+                            </div>
+                        )}
+                    </main>
+
+                    {/* 5️⃣ 底部導航焦點修正 */}
+                    <footer className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-10 grid grid-cols-3 items-center z-20 bg-gradient-to-t from-slate-950 to-transparent">
+                        <div className="flex flex-col items-center gap-3 text-blue-500 transition-all">
+                            <Icon name="scan" className="w-7 h-7" />
+                            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full shadow-[0_0_8px_#3b82f6]"></div>
+                        </div>
+                        <div className="flex flex-col items-center text-slate-700 hover:text-slate-500 transition-all">
+                            <Icon name="trending-up" className="w-7 h-7" />
+                        </div>
+                        <div className="flex flex-col items-center text-slate-700 hover:text-slate-500 transition-all">
+                            <Icon name="user" className="w-7 h-7" />
+                        </div>
+                    </footer>
+                </div>
+            );
+        }
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
